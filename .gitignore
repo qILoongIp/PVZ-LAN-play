@@ -1,0 +1,11 @@
+.plastic/
+.vs/
+Library/
+Logs/
+obj/
+UserSettings/
+.vsconfig
+Assembly-CSharp.csproj
+ignore.conf
+PvZ vs.sln
+.Temp/
