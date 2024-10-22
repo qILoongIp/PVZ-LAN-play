@@ -1,8 +1,9 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PUZ_ZombieCard : MonoBehaviour
+public class PUZ_ZombieCard : NetworkBehaviour
 {
     //[Header("²»¿ÉÓÃ×´Ì¬")]
     private GameObject Unavailable;
@@ -30,18 +31,39 @@ public class PUZ_ZombieCard : MonoBehaviour
     }
     public void OnPointerClick(BaseEventData data)
     {
-        if(this.transform.parent.gameObject == CardPool)
+        if (!IsOwner && IsClient)
+        {
+            NotifyServerOfClickServerRpc();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void NotifyServerOfClickServerRpc(ServerRpcParams rpcParams = default)
+    {
+        if (transform.parent.gameObject == CardPool)
         {
             if (CardPanel.transform.childCount < 10)
             {
-                this.transform.SetParent(CardPanel.transform);
-                SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
+                MoveCardToPanel();
             }
         }
-        else if(this.transform.parent.gameObject == CardPanel)
+        else if (transform.parent.gameObject == CardPanel)
         {
-            this.transform.SetParent(CardPool.transform);
-            SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
+            MoveCardToPool();
         }
+    }
+
+    private void MoveCardToPanel()
+    {
+        transform.SetParent(CardPanel.transform);
+        Debug.Log("Card moved to panel.");
+        SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
+    }
+
+    private void MoveCardToPool()
+    {
+        transform.SetParent(CardPool.transform);
+        Debug.Log("Card moved to pool.");
+        SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
     }
 }

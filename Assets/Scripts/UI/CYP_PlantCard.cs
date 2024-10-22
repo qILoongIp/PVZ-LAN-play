@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,21 +34,39 @@ public class CYP_PlantCard : NetworkBehaviour
     }
     public void OnPointerClick(BaseEventData data)
     {
-            if (this.transform.parent.gameObject == CardPool)
+        if(IsOwner && IsClient)
+        {
+            NotifyServerOfClickServerRpc();
+        }             
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void NotifyServerOfClickServerRpc(ServerRpcParams rpcParams = default)
+    {
+        if (transform.parent.gameObject == CardPool)
+        {
+            if (CardPanel.transform.childCount < 10)
             {
-                if (CardPanel.transform.childCount < 10)
-                {
-                    this.transform.SetParent(CardPanel.transform);
-                    //choose.GetComponent<AudioSource>().Play();
-                    SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
-                }
+                MoveCardToPanel();
             }
-            else if (this.transform.parent.gameObject == CardPanel)
-            {
-                this.transform.SetParent(CardPool.transform);
-                //choose.GetComponent<AudioSource>().Play();
-                SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
-            }
-        
+        }
+        else if (transform.parent.gameObject == CardPanel)
+        {
+            MoveCardToPool();
+        }
+    }
+
+    private void MoveCardToPanel()
+    {
+        transform.SetParent(CardPanel.transform);
+        Debug.Log("Card moved to panel.");
+        SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
+    }
+
+    private void MoveCardToPool()
+    {
+        transform.SetParent(CardPool.transform);
+        Debug.Log("Card moved to pool.");
+        SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
     }
 }

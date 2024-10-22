@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Cancel : MonoBehaviour
+public class Cancel : NetworkBehaviour
 {
     private GameObject ready;
     // Start is called before the first frame update
@@ -20,10 +21,25 @@ public class Cancel : MonoBehaviour
     }
     public void OnClick()
     {
-        if(ready.GetComponent<Ready>().isReady == true)
+        if(ready.GetComponent<Ready>().isReady == true && IsOwner && IsClient)
         {
-            GameManager.Instance.bools.RemoveAt(0);
-            ready.GetComponent<Ready>().isReady = false;
+            SetCancelServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    private void SetCancelServerRpc()
+    {
+        GameManager.Instance.SetPlantReadyServerRpc(false);
+        ready.GetComponent<Ready>().isReady = false;
+        UpdateCancelStatusClientRpc(false); // 通知所有客户端更新状态
+    }
+
+    [ClientRpc]
+    private void UpdateCancelStatusClientRpc(bool status)
+    {
+        if (status == false)
+        {
             Color newcolor = Color.white;
             newcolor.a = 0;
             GetComponent<Image>().color = newcolor;

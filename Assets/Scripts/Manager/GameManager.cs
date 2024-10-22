@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
     public GameObject ReadySetPlant;
-    public List<bool> bools = new List<bool>();
+    public NetworkVariable<bool> plantReady = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<bool> zombieReady = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private GameObject AllCards;
     public bool isStart;
     private GameObject PlantCardPanel;
@@ -35,7 +36,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (bools.Count >= 2 && AllCards.activeSelf)
+        if (plantReady.Value && zombieReady.Value && AllCards.activeSelf)
         {
             isStart = true;
             AllCards.SetActive(false);
@@ -54,6 +55,19 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlantReadyServerRpc(bool ready)
+    {
+        plantReady.Value = ready;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetZombieReadyServerRpc(bool ready)
+    {
+        zombieReady.Value = ready;
+    }
+
     public void ChangeSunNum(int changeNum)
     {
         sunNum += changeNum;
