@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5436375356156110440}
   - component: {fileID: 6735278407897178477}
   - component: {fileID: 4340357928920471592}
+  - component: {fileID: 8978220507647893101}
   m_Layer: 3
   m_Name: Normal Zombie
   m_TagString: Zombie
@@ -28,6 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2532070470357129631}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.64, y: 0.16, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
@@ -35,7 +37,6 @@ Transform:
   m_Children:
   - {fileID: 6786847225736937247}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1387062675656050299
 SpriteRenderer:
@@ -128,7 +129,6 @@ MonoBehaviour:
   damageInterval: 1
   health: 200
   attackedSound: 0
-  ispress: 0
 --- !u!50 &6735278407897178477
 Rigidbody2D:
   serializedVersion: 4
@@ -201,6 +201,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5781512, y: 0.7115966}
   m_EdgeRadius: 0
+--- !u!114 &8978220507647893101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2532070470357129631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &3212325008979441625
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,13 +247,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3212325008979441625}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6786847225736937247}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3998325513447961239
 SpriteRenderer:
@@ -322,6 +343,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6906840112938469128}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.104, y: 0.662, z: 0}
   m_LocalScale: {x: 0.3, y: 1, z: 0.3}
@@ -329,7 +351,6 @@ Transform:
   m_Children:
   - {fileID: 1406013985452675241}
   m_Father: {fileID: 2403262307272701557}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9008086354731768831
 SpriteRenderer:

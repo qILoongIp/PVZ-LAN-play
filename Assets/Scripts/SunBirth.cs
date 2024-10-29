@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class SunBirth : MonoBehaviour
+public class SunBirth : NetworkBehaviour
 {
     [Header("产生太阳的间隔时间")]
     public float interval;
@@ -20,11 +21,15 @@ public class SunBirth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        time += Time.deltaTime;
-        if(time >= interval && this.transform.parent != null)
+        if(IsServer)
         {
-            animator.SetBool("Ready", true);
+            time += Time.deltaTime;
+            if (time >= interval && this.transform.parent != null)
+            {
+                animator.SetBool("Ready", true);
+            }
         }
+
     }
     public void OnLsatFrame()
     {
@@ -33,6 +38,18 @@ public class SunBirth : MonoBehaviour
     }
     public void OnGlow()
     {
-        Instantiate(Sun,suntransform.position + new Vector3(0,0,-1),Quaternion.identity);
+        if(IsServer)
+        {
+            Vector3 spawnPosition = suntransform.position + new Vector3(0, 0, -1);
+            SpawnSunServerRpc(spawnPosition); // 调用客户端生成阳光
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnSunServerRpc(Vector3 position)
+    {
+        // 所有客户端实例化阳光
+        GameObject newSun = Instantiate(Sun, position, Quaternion.identity);
+        newSun.GetComponent<NetworkObject>().Spawn(); // 确保该对象同步至所有客户端
     }
 }

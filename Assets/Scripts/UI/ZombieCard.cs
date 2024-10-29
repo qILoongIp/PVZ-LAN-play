@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.Netcode;
 
 
-public class ZombieCard : MonoBehaviour
+public class ZombieCard : NetworkBehaviour
 {
     [Header("坐标修正")]
     public Vector3 rvector = new Vector3(0,0,0);
@@ -126,7 +127,7 @@ public class ZombieCard : MonoBehaviour
         GameObject[] box = GameObject.FindGameObjectsWithTag("Land");
         foreach (Collider2D d in col)
         {
-            if(d.transform.childCount != 0)
+            if(IsClient && !IsOwner && d.transform.childCount != 0)
             {
                 Transform c = d.transform.GetChild(0);
                 if (c.tag == "Land")
@@ -156,10 +157,13 @@ public class ZombieCard : MonoBehaviour
                     if (c.parent.transform.name == "Box6" || c.parent.transform.name == "Box7" || c.parent.transform.name == "Box8")
                     {
                         GameObject.Destroy(currentgameobject);
-                        currentgameobject = Instantiate(gameobjectprefab);
-                        LayerManager.Instance.AddLayer(2, currentgameobject);
-                        currentgameobject.transform.parent = c.transform;
-                        currentgameobject.transform.localPosition = Vector3.zero + rvector;
+                        Vector3 gridCenterPosition = c.transform.position + rvector;
+                        // 使用网络方法在网络上同步创建植物预制体
+                        CreateZombieOnClientServerRpc(gridCenterPosition, 2, c.GetComponent<NetworkObject>().NetworkObjectId);
+                        //currentgameobject = Instantiate(gameobjectprefab);
+                        //LayerManager.Instance.AddLayer(2, currentgameobject);
+                        //currentgameobject.transform.parent = c.transform;
+                        //currentgameobject.transform.localPosition = Vector3.zero + rvector;
                         SoundManager.Instance.PlaySound(SoundManager.Sounds.plant, true);
                         currentgameobject = null;
                         //结束高亮
@@ -170,7 +174,6 @@ public class ZombieCard : MonoBehaviour
                             onebox.GetComponent<SpriteRenderer>().color = color;
                         }
                         time = 0;
-                        GameManager.Instance.ChangeBrainNum(-costbrain);
                         break;
                     }
                 }
@@ -189,6 +192,34 @@ public class ZombieCard : MonoBehaviour
             currentgameobject = null;
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CreateZombieOnClientServerRpc(Vector3 position, int layer, ulong parentId)
+    {
+        // 在服务器上查找父对象
+        NetworkObject parentNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[parentId];
+
+        // 实例化植物预制体在服务器计算好的中心位置
+        GameObject newZombie = Instantiate(gameobjectprefab, position, Quaternion.identity);
+        var networkObject = newZombie.GetComponent<NetworkObject>();
+        networkObject.Spawn();
+
+        // 设置植物的父对象
+        newZombie.transform.parent = parentNetworkObject.transform;
+        newZombie.transform.localPosition = Vector3.zero + rvector;
+
+        // 添加层级
+        LayerManager.Instance.AddLayer(layer, newZombie);
+        UpdateBrainNumClientRpc();
+        
+    }
+
+    [ClientRpc]
+    public void UpdateBrainNumClientRpc()
+    {
+        GameManager.Instance.ChangeBrainNum(-costbrain);
+    }
+
     // 工具函数：将鼠标坐标转换为世界坐标
     Vector3 ConvertMouseToWorld(Vector3 mousePosition)
     {

@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class Sun : MonoBehaviour
+public class Sun : NetworkBehaviour
 {
     [Header("ÏûÊ§Ê±¼ä")]
     public float time;
@@ -66,15 +67,40 @@ public class Sun : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        if (flag)
+        if (flag && IsOwner)
         {
             //this.transform.Translate(endposition.position - this.transform.position);
             SoundManager.Instance.PlaySound(SoundManager.Sounds.getsun, true);
-            GameManager.Instance.ChangeSunNum(25);
-            startTime = Time.time;
-            initialPosition = transform.position;
-            isMoving = true;
+            Vector3 targetPosition = endposition;
+            UpdateSunNumAndMoveServerRpc(transform.position, targetPosition);
+            //GameManager.Instance.ChangeSunNum(25);
+            //startTime = Time.time;
+            //initialPosition = transform.position;
+            //isMoving = true;
             flag = false;
         }
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateSunNumAndMoveServerRpc(Vector3 startPosition, Vector3 targetPosition)
+    {
+        UpdateSunNumClientRpc();
+        StartSunMovementClientRpc(startPosition, targetPosition);
+    }
+
+    [ClientRpc]
+    private void StartSunMovementClientRpc(Vector3 startPosition, Vector3 targetPosition)
+    {
+        startTime = Time.time;
+        initialPosition = startPosition;
+        endposition = targetPosition;
+        isMoving = true;
+    }
+
+    [ClientRpc]
+    private void UpdateSunNumClientRpc()
+    {
+        GameManager.Instance.ChangeSunNum(25);
     }
 }

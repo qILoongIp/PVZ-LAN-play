@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 158293714388973825}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3233841228785405612}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3850161483858839191
 SpriteRenderer:
@@ -121,6 +121,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4161436011266874314}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.042, y: 0.446, z: 0}
   m_LocalScale: {x: 0.3, y: 0.7, z: 0.3}
@@ -128,7 +129,6 @@ Transform:
   m_Children:
   - {fileID: 2428981123902682103}
   m_Father: {fileID: 5241057771065292523}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6059799780853037084
 SpriteRenderer:
@@ -196,6 +196,7 @@ GameObject:
   - component: {fileID: 8640786710652039972}
   - component: {fileID: 5190448213320337276}
   - component: {fileID: 3177745258425949732}
+  - component: {fileID: -3783678657476747991}
   m_Layer: 0
   m_Name: Wallnut
   m_TagString: Plant
@@ -210,6 +211,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5521062736881072379}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.81, y: -0.18, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
@@ -217,7 +219,6 @@ Transform:
   m_Children:
   - {fileID: 3233841228785405612}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5088899085050120817
 SpriteRenderer:
@@ -377,3 +378,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 4000
+--- !u!114 &-3783678657476747991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521062736881072379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1

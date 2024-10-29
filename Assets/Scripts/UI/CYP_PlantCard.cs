@@ -59,14 +59,12 @@ public class CYP_PlantCard : NetworkBehaviour
     private void MoveCardToPanel()
     {
         transform.SetParent(CardPanel.transform);
-        Debug.Log("Card moved to panel.");
         SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
     }
 
     private void MoveCardToPool()
     {
         transform.SetParent(CardPool.transform);
-        Debug.Log("Card moved to pool.");
         SoundManager.Instance.PlaySound(SoundManager.Sounds.choose, true);
     }
 }

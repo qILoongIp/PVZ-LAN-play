@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 442609601245614486}
   - component: {fileID: 8801238397735233792}
   - component: {fileID: 2396442134809329288}
+  - component: {fileID: 4311031585231620689}
   m_Layer: 0
   m_Name: Squash
   m_TagString: Plant
@@ -29,6 +30,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1562351361098934182}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.754, y: -1.524, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
@@ -36,7 +38,6 @@ Transform:
   m_Children:
   - {fileID: 4228338328566286827}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &127638693906602925
 SpriteRenderer:
@@ -211,6 +212,27 @@ MonoBehaviour:
   damage: 1800
   Top: 2
   Speed: 3
+--- !u!114 &4311031585231620689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562351361098934182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1967276616880665567
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,13 +258,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967276616880665567}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4228338328566286827}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2160943820525745227
 SpriteRenderer:
@@ -332,6 +354,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6688609691801977843}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.016, y: 0.396, z: 0}
   m_LocalScale: {x: 0.3, y: 0.7, z: 0.3}
@@ -339,7 +362,6 @@ Transform:
   m_Children:
   - {fileID: 5060671299673839546}
   m_Father: {fileID: 8038818982042389012}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7664295479207563038
 SpriteRenderer:

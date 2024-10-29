@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Globalization;
+using Unity.Netcode;
 
 
-public class PlantCard : MonoBehaviour
+public class PlantCard : NetworkBehaviour
 {
     [Header("坐标修正")]
     public Vector3 rvector = new Vector3(0,0,0);
@@ -118,22 +120,25 @@ public class PlantCard : MonoBehaviour
             return;
         }
         PointerEventData pointerEventData = data as PointerEventData;
-        Collider2D[] col = Physics2D.OverlapPointAll(ConvertMouseToWorld(pointerEventData.position) + rvector);
+        Vector3 spawnPosition = ConvertMouseToWorld(pointerEventData.position) + rvector;
+        Collider2D[] col = Physics2D.OverlapPointAll(spawnPosition);
         GameObject[] box = GameObject.FindGameObjectsWithTag("Land");
         foreach (Collider2D d in col)
         {
-            if (d.transform.childCount != 0) 
-            { 
+            if (IsClient && IsOwner && d.transform.childCount != 0)
+            {
                 Transform c = d.transform.GetChild(0);
                 if (c.tag == "Land" && c.transform.childCount == 0)
                 {
                     if (c.parent.transform.name == "Box0" || c.parent.transform.name == "Box1" || c.parent.transform.name == "Box2" || c.parent.transform.name == "Box3" || c.parent.transform.name == "Box4" || c.parent.transform.name == "Box5")
                     {
                         GameObject.Destroy(currentgameobject);
-                        currentgameobject = Instantiate(gameobjectprefab);
-                        LayerManager.Instance.AddLayer(0, currentgameobject);
-                        currentgameobject.transform.parent = c.transform;
-                        currentgameobject.transform.localPosition = Vector3.zero + rvector;
+                        Vector3 gridCenterPosition = c.transform.position + rvector;
+                        CreatePlantOnClientServerRpc(gridCenterPosition, 0, c.GetComponent<NetworkObject>().NetworkObjectId);
+                        //currentgameobject = Instantiate(gameobjectprefab);
+                        //LayerManager.Instance.AddLayer(0, currentgameobject);
+                        //currentgameobject.transform.parent = c.transform;
+                        //currentgameobject.transform.localPosition = Vector3.zero + rvector;
                         SoundManager.Instance.PlaySound(SoundManager.Sounds.plant, true);
                         currentgameobject = null;
                         //结束高亮
@@ -144,13 +149,12 @@ public class PlantCard : MonoBehaviour
                             onebox.GetComponent<SpriteRenderer>().color = color;
                         }
                         time = 0;
-                        GameManager.Instance.ChangeSunNum(-costsun);
                         break;
                     }
                 }
             }
         }
-        if(currentgameobject != null)
+        if (currentgameobject != null)
         {
             //结束高亮
             foreach (GameObject onebox in box)
@@ -163,6 +167,33 @@ public class PlantCard : MonoBehaviour
             currentgameobject = null;
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CreatePlantOnClientServerRpc(Vector3 position, int layer, ulong parentId)
+    {
+        // 在客户端上查找父对象
+        NetworkObject parentNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[parentId];
+        // 实例化植物预制体
+        GameObject newPlant = Instantiate(gameobjectprefab, position, Quaternion.identity);
+        // 使用网络对象的 Spawn 方法在网络上创建这个对象
+        var networkObject = newPlant.GetComponent<NetworkObject>();
+        networkObject.Spawn();
+        // 设置植物的父对象
+        newPlant.transform.parent = parentNetworkObject.transform;
+        newPlant.transform.localPosition = Vector3.zero + rvector;
+        // 添加层级
+        LayerManager.Instance.AddLayer(layer, newPlant);
+        UpdateSunNumClientRpc();
+
+    }
+
+    [ClientRpc]
+    public void UpdateSunNumClientRpc()
+    {
+        GameManager.Instance.ChangeSunNum(-costsun);
+    }
+
+
     // 工具函数：将鼠标坐标转换为世界坐标
     Vector3 ConvertMouseToWorld(Vector3 mousePosition)
     {

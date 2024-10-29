@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class brain : MonoBehaviour
+public class brain : NetworkBehaviour
 {
     [Header("ÏûÊ§Ê±¼ä")]
     public float time;
@@ -64,16 +65,43 @@ public class brain : MonoBehaviour
             }
         }
     }
+    
     private void OnMouseDown()
     {
-        if(flag)
+        if (flag && !IsOwner)
         {
-            GameManager.Instance.ChangeBrainNum(25);
+            //this.transform.Translate(endposition.position - this.transform.position);
             SoundManager.Instance.PlaySound(SoundManager.Sounds.getbrain, true);
-            startTime = Time.time;
-            initialPosition = transform.position;
-            isMoving = true;
+            Vector3 targetPosition = endposition;
+            UpdateBrainNumAndMoveServerRpc(transform.position, targetPosition);
+            //GameManager.Instance.ChangeSunNum(25);
+            //startTime = Time.time;
+            //initialPosition = transform.position;
+            //isMoving = true;
             flag = false;
         }
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateBrainNumAndMoveServerRpc(Vector3 startPosition, Vector3 targetPosition)
+    {
+        UpdateBrainNumClientRpc();
+        StartBrainMovementClientRpc(startPosition, targetPosition);
+    }
+
+    [ClientRpc]
+    private void StartBrainMovementClientRpc(Vector3 startPosition, Vector3 targetPosition)
+    {
+        startTime = Time.time;
+        initialPosition = startPosition;
+        endposition = targetPosition;
+        isMoving = true;
+    }
+
+    [ClientRpc]
+    private void UpdateBrainNumClientRpc()
+    {
+        GameManager.Instance.ChangeBrainNum(25);
     }
 }
