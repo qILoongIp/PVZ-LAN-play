@@ -65,7 +65,7 @@ public class ZombieCard : NetworkBehaviour
     public void OnBeginDrag(BaseEventData data)
     {
         //无法拖拽的情况
-        if (Unavailable.GetComponent<Image>().color.a != 0 || Unprepared.GetComponent<Image>().fillAmount != 0)
+        if (IsOwner || Unavailable.GetComponent<Image>().color.a != 0 || Unprepared.GetComponent<Image>().fillAmount != 0)
         {
             //buzzer.GetComponent<AudioSource>().Play();
             SoundManager.Instance.PlaySound(SoundManager.Sounds.buzzer,true);

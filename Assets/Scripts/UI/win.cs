@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement; // 引入场景管理
 
-public class win : MonoBehaviour
+public class win : NetworkBehaviour
 {
     [Header("植物奖杯")]
     public GameObject Plantawrad;
@@ -42,14 +43,21 @@ public class win : MonoBehaviour
             if (!plantAwardSpawned)
             {
                 SetAwardVisibility(true, true, true);
-                StartCoroutine(SpawnAndAnimatePlantAward());
+                if (IsServer)
+                {
+                    SpawnAndAnimatePlantAwardClientRpc();
+                }
                 plantAwardSpawned = true; // 设置为已生成
             }
         }
 
         // 检查是否需要生成僵尸奖杯
-        GenerateZombieAward();
+        if (IsServer)
+        {
+            GenerateZombieAward();
+        }
     }
+
 
     void SetAwardVisibility(bool first, bool second, bool third)
     {
@@ -101,7 +109,7 @@ public class win : MonoBehaviour
                 // 获取僵尸的世界坐标并进行比较
                 if (zombie.transform.position.x < box0ChildWorldPos.x - 1)
                 {
-                    StartCoroutine(SpawnAndAnimateZombieAward(zombie.transform.position));
+                    SpawnAndAnimateZombieAwardClientRpc();
                     zombieAwardSpawned = true; // 设置为已生成
                     break; // 一旦生成，跳出循环
                 }
@@ -109,7 +117,7 @@ public class win : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnAndAnimateZombieAward(Vector3 spawnPosition)
+    IEnumerator SpawnAndAnimateZombieAward()
     {
         Vector3 worldPosition = new Vector3(Screen.width, 0, 0); // 右下角
         Vector3 targetWorldPosition = Camera.main.ScreenToWorldPoint(worldPosition);
@@ -137,9 +145,33 @@ public class win : MonoBehaviour
         RestartGame(); // 重启游戏
     }
 
+    [ClientRpc]
+    void SpawnAndAnimatePlantAwardClientRpc()
+    {
+        StartCoroutine(SpawnAndAnimatePlantAward());
+    }
+
+    [ClientRpc]
+    void SpawnAndAnimateZombieAwardClientRpc()
+    {
+        StartCoroutine(SpawnAndAnimateZombieAward());
+    }
+
     void RestartGame()
     {
+        NetworkManager.Singleton.Shutdown();
         // 重新加载当前场景以重启游戏
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        InitManager initManager = FindObjectOfType<InitManager>();
+        if(initManager != null)
+        {
+            Destroy(initManager.gameObject);
+        }
+
+        NetworkManager networkManager = FindObjectOfType<NetworkManager>();
+        if(networkManager != null)
+        {
+            Destroy(networkManager.gameObject);
+        }
+        SceneManager.LoadScene("Start");
     }
 }
