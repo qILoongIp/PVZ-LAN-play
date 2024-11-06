@@ -33,7 +33,12 @@ public class InitManager : NetworkBehaviour
         {
             Debug.Log("Server Started");
         };
-        
+        NetworkManager.Singleton.OnServerStarted += () =>
+        {
+            Debug.Log("Server Started");
+            // 服务器启动后加载场景
+            LoadScene("Day");
+        };
     }
 
     public void Update()
@@ -44,7 +49,7 @@ public class InitManager : NetworkBehaviour
     public void HostButton()
     {
         string ipAddress = ipAddressInputField.text;
-        //SetNetworkAddress(ipAddress); //设置网络地址
+        SetNetworkAddress(ipAddress); //设置网络地址
         if(NetworkManager.Singleton.StartHost())
         {
             Debug.Log("Host.");
@@ -53,7 +58,6 @@ public class InitManager : NetworkBehaviour
         {
             Debug.Log("Host fail.");
         }
-        LoadScene("Day");
         Debug.Log("IsClient" + this.IsClient);
         Debug.Log("IsOwner" + this.IsOwner);
         //var transport = NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
@@ -62,7 +66,12 @@ public class InitManager : NetworkBehaviour
     public void JoinButton()
     {
         string ipAddress = ipAddressInputField.text;
-        //SetNetworkAddress(ipAddress); //设置网络地址
+        SetNetworkAddress(ipAddress); //设置网络地址
+        if (NetworkManager.Singleton.IsClient)
+        {
+            NetworkManager.Singleton.Shutdown();
+            Debug.Log("已关闭现有客户端连接。");
+        }
         if (NetworkManager.Singleton.StartClient())
         {
             Debug.Log("Client.");
