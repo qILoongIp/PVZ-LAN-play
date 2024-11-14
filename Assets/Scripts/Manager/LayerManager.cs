@@ -20,7 +20,7 @@ public class LayerManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        layer = 0;
+        layer = 1;
         /*
         plantlayer = 0;
         pre_plantlayer = 1;
