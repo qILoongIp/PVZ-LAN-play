@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Unity.Netcode.Transports.UTP;
+using System.Xml.Serialization;
 
 public class InitManager : NetworkBehaviour
 {
@@ -19,6 +20,9 @@ public class InitManager : NetworkBehaviour
 
     public TMP_InputField ipAddressInputField;
     public TMP_InputField portAddressInputField;
+
+    private ulong firstclientId = 0;
+    private bool isFirstClientConnected = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +31,22 @@ public class InitManager : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
         {
-            Debug.Log("A new client connected,id=" + id);
+            if(id == NetworkManager.Singleton.LocalClientId)
+            {
+                Debug.Log("Host connected,id=" + id);
+                return;
+            }
+            if(!isFirstClientConnected)
+            {
+                firstclientId = id;
+                isFirstClientConnected = true;
+                Debug.Log("A new client connected,id=" + id);
+            }
+            else
+            {
+                Debug.LogWarning($"Client with id={id} rejected because first client is already connected.");
+                NetworkManager.Singleton.DisconnectClient(id);
+            }
         };
 
         NetworkManager.Singleton.OnClientDisconnectCallback += (id) =>
@@ -35,10 +54,8 @@ public class InitManager : NetworkBehaviour
             Debug.Log("A new client Disconnect,id=" +id);
         };
 
-        NetworkManager.Singleton.OnServerStarted += () =>
-        {
-            Debug.Log("Server Started");
-        };
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+
         NetworkManager.Singleton.OnServerStarted += () =>
         {
             Debug.Log("Server Started");
@@ -76,6 +93,23 @@ public class InitManager : NetworkBehaviour
     public void Update()
     {
         //Debug.Log("”Œœ∑∂‘œÛ£∫"+GameObject.FindWithTag("DayBG"));
+    }
+
+    private void OnClientDisconnected(ulong clientId)
+    {
+        Debug.LogWarning($"Client with id={clientId} was disconnected. Exiting application...");
+        if(clientId == NetworkManager.Singleton.LocalClientId)
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_ANDROID
+            AndroidJavaObject activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer")
+                .GetStatic<AndroidJavaObject>("currentActivity");
+            activity.Call("finish");
+#else
+            Application.Quit();
+#endif
+        }
     }
 
     public void HostButton()
